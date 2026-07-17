@@ -59,7 +59,8 @@ FaceSet = TypedDict('FaceSet',
 FaceStore : TypeAlias = Dict[str, FaceSet]
 FaceTrack : TypeAlias = Dict[int, Face]
 
-Language = Literal['en']
+Language = Literal['en', 'zh']
+LanguagePreference = Literal['system', 'en', 'zh']
 Locales : TypeAlias = Dict[Language, Dict[str, Any]]
 LocalePoolSet : TypeAlias = Dict[str, Locales]
 
@@ -337,7 +338,8 @@ StateKey = Literal\
 	'halt_on_error',
 	'job_id',
 	'job_status',
-	'step_index'
+	'step_index',
+	'language'
 ]
 State = TypedDict('State',
 {
@@ -408,7 +410,8 @@ State = TypedDict('State',
 	'halt_on_error' : bool,
 	'job_id' : str,
 	'job_status' : JobStatus,
-	'step_index' : int
+	'step_index' : int,
+	'language' : LanguagePreference
 })
 ApplyStateItem : TypeAlias = Callable[[Any, Any], None]
 StateSet : TypeAlias = Dict[AppContext, State]
