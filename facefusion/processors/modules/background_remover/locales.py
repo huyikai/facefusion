@@ -1,26 +1,31 @@
 from facefusion.types import Locales
 
 LOCALES : Locales =\
-{
-	'en':
-	{
-		'help':
-		{
-			'model': 'choose the model responsible for removing the background',
-			'fill_color': 'apply red, green, blue and alpha values to the background',
-			'despill_color': 'remove red, green, blue and alpha values from the foreground'
-		},
-		'uis':
-		{
-			'model_dropdown': 'BACKGROUND REMOVER MODEL',
-			'fill_color_red_number': 'FILL COLOR RED',
-			'fill_color_green_number': 'FILL COLOR GREEN',
-			'fill_color_blue_number': 'FILL COLOR BLUE',
-			'fill_color_alpha_number': 'FILL COLOR ALPHA',
-			'despill_color_red_number': 'DESPILL COLOR RED',
-			'despill_color_green_number': 'DESPILL COLOR GREEN',
-			'despill_color_blue_number': 'DESPILL COLOR BLUE',
-			'despill_color_alpha_number': 'DESPILL COLOR ALPHA'
-		}
-	}
-}
+{'en': {'help': {'model': 'choose the model responsible for removing the background',
+                 'fill_color': 'apply red, green, blue and alpha values to the background',
+                 'despill_color': 'remove red, green, blue and alpha values from the foreground'},
+        'uis_help': {'model': 'Choose the background removal model. Quality varies with scene complexity.',
+                     'fill_color': 'Set the replacement background color when using a solid fill.',
+                     'despill_color': 'Reduce color spill from the background onto the foreground edges.'},
+        'uis': {'model_dropdown': 'BACKGROUND REMOVER MODEL',
+                'fill_color_red_number': 'FILL COLOR RED',
+                'fill_color_green_number': 'FILL COLOR GREEN',
+                'fill_color_blue_number': 'FILL COLOR BLUE',
+                'fill_color_alpha_number': 'FILL COLOR ALPHA',
+                'despill_color_red_number': 'DESPILL COLOR RED',
+                'despill_color_green_number': 'DESPILL COLOR GREEN',
+                'despill_color_blue_number': 'DESPILL COLOR BLUE',
+                'despill_color_alpha_number': 'DESPILL COLOR ALPHA'}},
+ 'zh': {'help': {'model': '选择负责抠除背景的模型', 'fill_color': '为背景应用红、绿、蓝和透明度值', 'despill_color': '从前景移除红、绿、蓝和透明度溢色'},
+        'uis_help': {'model': '选择背景移除模型。复杂场景下效果会有差异。',
+                     'fill_color': '使用纯色填充时设置替换背景的颜色。',
+                     'despill_color': '减少背景颜色渗透到前景边缘的溢色。'},
+        'uis': {'model_dropdown': '背景移除模型',
+                'fill_color_red_number': '填充色 红',
+                'fill_color_green_number': '填充色 绿',
+                'fill_color_blue_number': '填充色 蓝',
+                'fill_color_alpha_number': '填充色 透明度',
+                'despill_color_red_number': '去溢色 红',
+                'despill_color_green_number': '去溢色 绿',
+                'despill_color_blue_number': '去溢色 蓝',
+                'despill_color_alpha_number': '去溢色 透明度'}}}

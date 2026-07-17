@@ -15,3 +15,9 @@ def test_get() -> None:
 
 	translator.set_language('zh')
 	assert translator.get_language() == 'zh'
+
+
+def test_zh_ui_strings() -> None:
+	translator.set_language('zh')
+	assert translator.get('uis.language_dropdown') == '语言'
+	assert translator.get('choices.processors.face_enhancer') == '面部增强'
