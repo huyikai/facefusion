@@ -22,6 +22,9 @@ Add a UI language preference so users can:
 | Apply timing | Save + toast; user refreshes page |
 | Approach | Config-driven + UI dropdown (Approach A) |
 | Languages (v1) | `system` / `en` / `zh` |
+| Technical choice labels (zh) | Keep English id + append `【中文说明】` (do not replace the id) |
+| Parameter help UX | `ℹ️` icon with hover/click explanation (not always-visible `info=` text) |
+| Help coverage (v1) | Processors + major processor options only |
 
 ## Configuration model
 
@@ -71,6 +74,80 @@ New component: `facefusion/uis/components/language.py`
 
 No live re-labeling of existing Gradio components.
 
+## Technical choice label convention (Chinese UI)
+
+Some UI options are **technical identifiers** (especially processor module names). Fully translating them to Chinese alone is inappropriate because users still need the original id for docs, logs, and configs.
+
+### Display rule (when active language is `zh`)
+
+```text
+{english_id}【{chinese_gloss}】
+```
+
+Examples:
+
+- `face_enhancer【面部增强】`
+- `face_swapper【换脸】`
+- `frame_enhancer【画面增强】`
+
+When active language is `en`, keep the plain English id (no brackets).
+
+### Value rule (critical)
+
+- **Displayed label** may include `【…】`
+- **Stored / submitted value** must remain the raw English id (e.g. `face_enhancer`)
+- Implement with Gradio choice tuples `(label, value)` so state, jobs, and CLI stay compatible
+
+### Scope (v1)
+
+In scope for annotated labels:
+
+- Processor checkbox choices (`face_swapper`, `face_enhancer`, …)
+
+Out of scope unless later expanded:
+
+- Model filenames / model ids (keep English only)
+- Gradio built-in chrome strings
+
+Optional follow-up (same format if needed): enum-like UI values such as `one` / `many` / `reference` for face selector — confirm during implementation if user wants them annotated the same way.
+
+### Locales
+
+Add a dedicated glossary map under locales, e.g. `choices.processors.face_enhancer = 面部增强`, composed at render time as `f"{id}【{gloss}】"` for zh.
+
+## Parameter help (`ℹ️` icon)
+
+Many labels (processor names, models, detector options) remain unclear even with Chinese glosses. Provide short explanations via an **info icon**, not permanent helper text under every control.
+
+### Interaction
+
+- Show a `ℹ️` (or Gradio-compatible info affordance) next to the control label / choice group
+- **Hover** (desktop) and/or **click/tap** (needed for trackpads/mobile) reveals the explanation
+- Content comes from locales (`help.*` / new `uis_help.*` keys), so `en`/`zh` both work
+- Keep copy short: 1–2 sentences, what it does + when to change it
+
+### Implementation notes
+
+- Prefer Gradio-native patterns first (e.g. label markdown with title/tooltip where supported, or a small adjacent HTML/Button + `gr.Info` / popover pattern that fits current Gradio 5.x)
+- Must not change stored values or processor logic
+- If a true tooltip widget is awkward in Gradio, acceptable fallback: clicking `ℹ️` shows `gr.Info` / modal markdown with the same locale text
+- English UI gets the same icons (English help text)
+
+### Scope (v1)
+
+**In scope:**
+
+- Processor checkbox group (`face_swapper`, `face_enhancer`, …) — each processor id may have its own short help entry; group-level help also allowed
+- Major options of enabled processors: model / weight / blend / pixel boost / morph / factor / areas / etc. (whatever each processor module already exposes in UI)
+
+**Out of scope for v1:**
+
+- Face detector / selector / masker / tracker
+- Output, execution, download, memory blocks
+- Webcam / benchmark / jobs layouts extras beyond shared processor widgets
+
+Later versions can reuse the same `ℹ️` helper pattern for other blocks.
+
 ## Persistence / config write
 
 `facefusion/config.py` currently read-only. Add:
@@ -96,9 +173,11 @@ Only used for language preference in v1 (keep scope tight).
 | UI bootstrap (`core` / layouts) | Resolve preference → `translator.set_language` before render |
 | `facefusion/uis/components/language.py` | New dropdown component |
 | `facefusion/uis/layouts/default.py` (+ other layouts if needed) | Mount language component |
-| `facefusion/locales.py` + processor locales | Keep `en`/`zh`; add strings for language UI + toast |
+| `facefusion/locales.py` + processor locales | Keep `en`/`zh`; add language UI strings + processor gloss map |
+| `facefusion/uis/components/processors.py` | zh: show `id【gloss】`, value stays raw id; add `ℹ️` help |
+| Processor option UI components | Add `ℹ️` help next to model/weight/blend/… controls |
 | `facefusion.ini` | `language =` under `[uis]` |
-| `tests/test_translator.py` (+ small config/resolve tests) | Cover resolve, fallback, set_language |
+| `tests/test_translator.py` (+ small config/resolve/label tests) | Cover resolve, fallback, set_language, label composition |
 
 ## Non-goals (v1)
 
@@ -116,6 +195,8 @@ Only used for language preference in v1 (keep scope tight).
 4. Unit: missing zh key falls back to en
 5. Unit: `set_str_value` writes ini and subsequent read returns new value
 6. Manual: change dropdown → ini updated → refresh → UI labels match selection
+7. Manual (zh): processors show `id【gloss】`; `ℹ️` reveals short help for processors and key processor options
+8. Manual (en): processors stay plain ids; `ℹ️` still available with English help
 
 ## Rollout / repo notes
 
@@ -130,3 +211,11 @@ Only used for language preference in v1 (keep scope tight).
 - Choice survives restart via `facefusion.ini`
 - Refresh applies language; toast tells user to refresh
 - Headless / non-UI commands remain functional (language resolve from ini/system still safe)
+- In zh UI, processor choices use `id【gloss】` while values remain raw ids
+- Processor group and major processor options expose `ℹ️` help in both languages
+
+## Spec changelog
+
+- 2026-07-17: Initial approved design (UI language preference)
+- 2026-07-17: Add zh technical label format `id【gloss】`
+- 2026-07-17: Add `ℹ️` help icon UX; v1 limited to processors + major processor options
