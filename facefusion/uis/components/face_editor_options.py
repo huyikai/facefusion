@@ -7,161 +7,224 @@ from facefusion.common_helper import calculate_float_step
 from facefusion.processors.core import load_processor_module
 from facefusion.processors.modules.face_editor import choices as face_editor_choices
 from facefusion.processors.modules.face_editor.types import FaceEditorModel
+from facefusion.uis import help_helper
 from facefusion.uis.core import get_ui_component, register_ui_component
 
+MODULE_NAME = 'facefusion.processors.modules.face_editor'
+
 FACE_EDITOR_MODEL_DROPDOWN : Optional[gradio.Dropdown] = None
+FACE_EDITOR_MODEL_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_EYEBROW_DIRECTION_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_EYEBROW_DIRECTION_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_EYE_GAZE_HORIZONTAL_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_EYE_GAZE_HORIZONTAL_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_EYE_GAZE_VERTICAL_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_EYE_GAZE_VERTICAL_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_EYE_OPEN_RATIO_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_EYE_OPEN_RATIO_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_LIP_OPEN_RATIO_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_LIP_OPEN_RATIO_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_MOUTH_GRIM_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_MOUTH_GRIM_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_MOUTH_POUT_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_MOUTH_POUT_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_MOUTH_PURSE_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_MOUTH_PURSE_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_MOUTH_SMILE_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_MOUTH_SMILE_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_MOUTH_POSITION_HORIZONTAL_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_MOUTH_POSITION_HORIZONTAL_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_MOUTH_POSITION_VERTICAL_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_MOUTH_POSITION_VERTICAL_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_HEAD_PITCH_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_HEAD_PITCH_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_HEAD_YAW_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_HEAD_YAW_HELP_BUTTON : Optional[gradio.Button] = None
 FACE_EDITOR_HEAD_ROLL_SLIDER : Optional[gradio.Slider] = None
+FACE_EDITOR_HEAD_ROLL_HELP_BUTTON : Optional[gradio.Button] = None
 
 
 def render() -> None:
 	global FACE_EDITOR_MODEL_DROPDOWN
+	global FACE_EDITOR_MODEL_HELP_BUTTON
 	global FACE_EDITOR_EYEBROW_DIRECTION_SLIDER
+	global FACE_EDITOR_EYEBROW_DIRECTION_HELP_BUTTON
 	global FACE_EDITOR_EYE_GAZE_HORIZONTAL_SLIDER
+	global FACE_EDITOR_EYE_GAZE_HORIZONTAL_HELP_BUTTON
 	global FACE_EDITOR_EYE_GAZE_VERTICAL_SLIDER
+	global FACE_EDITOR_EYE_GAZE_VERTICAL_HELP_BUTTON
 	global FACE_EDITOR_EYE_OPEN_RATIO_SLIDER
+	global FACE_EDITOR_EYE_OPEN_RATIO_HELP_BUTTON
 	global FACE_EDITOR_LIP_OPEN_RATIO_SLIDER
+	global FACE_EDITOR_LIP_OPEN_RATIO_HELP_BUTTON
 	global FACE_EDITOR_MOUTH_GRIM_SLIDER
+	global FACE_EDITOR_MOUTH_GRIM_HELP_BUTTON
 	global FACE_EDITOR_MOUTH_POUT_SLIDER
+	global FACE_EDITOR_MOUTH_POUT_HELP_BUTTON
 	global FACE_EDITOR_MOUTH_PURSE_SLIDER
+	global FACE_EDITOR_MOUTH_PURSE_HELP_BUTTON
 	global FACE_EDITOR_MOUTH_SMILE_SLIDER
+	global FACE_EDITOR_MOUTH_SMILE_HELP_BUTTON
 	global FACE_EDITOR_MOUTH_POSITION_HORIZONTAL_SLIDER
+	global FACE_EDITOR_MOUTH_POSITION_HORIZONTAL_HELP_BUTTON
 	global FACE_EDITOR_MOUTH_POSITION_VERTICAL_SLIDER
+	global FACE_EDITOR_MOUTH_POSITION_VERTICAL_HELP_BUTTON
 	global FACE_EDITOR_HEAD_PITCH_SLIDER
+	global FACE_EDITOR_HEAD_PITCH_HELP_BUTTON
 	global FACE_EDITOR_HEAD_YAW_SLIDER
+	global FACE_EDITOR_HEAD_YAW_HELP_BUTTON
 	global FACE_EDITOR_HEAD_ROLL_SLIDER
+	global FACE_EDITOR_HEAD_ROLL_HELP_BUTTON
 
 	has_face_editor = 'face_editor' in state_manager.get_item('processors')
-	FACE_EDITOR_MODEL_DROPDOWN = gradio.Dropdown(
-		label = translator.get('uis.model_dropdown', 'facefusion.processors.modules.face_editor'),
-		choices = face_editor_choices.face_editor_models,
-		value = state_manager.get_item('face_editor_model'),
-		visible = has_face_editor
-	)
-	FACE_EDITOR_EYEBROW_DIRECTION_SLIDER = gradio.Slider(
-		label = translator.get('uis.eyebrow_direction_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_eyebrow_direction'),
-		step = calculate_float_step(face_editor_choices.face_editor_eyebrow_direction_range),
-		minimum = face_editor_choices.face_editor_eyebrow_direction_range[0],
-		maximum = face_editor_choices.face_editor_eyebrow_direction_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_EYE_GAZE_HORIZONTAL_SLIDER = gradio.Slider(
-		label = translator.get('uis.eye_gaze_horizontal_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_eye_gaze_horizontal'),
-		step = calculate_float_step(face_editor_choices.face_editor_eye_gaze_horizontal_range),
-		minimum = face_editor_choices.face_editor_eye_gaze_horizontal_range[0],
-		maximum = face_editor_choices.face_editor_eye_gaze_horizontal_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_EYE_GAZE_VERTICAL_SLIDER = gradio.Slider(
-		label = translator.get('uis.eye_gaze_vertical_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_eye_gaze_vertical'),
-		step = calculate_float_step(face_editor_choices.face_editor_eye_gaze_vertical_range),
-		minimum = face_editor_choices.face_editor_eye_gaze_vertical_range[0],
-		maximum = face_editor_choices.face_editor_eye_gaze_vertical_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_EYE_OPEN_RATIO_SLIDER = gradio.Slider(
-		label = translator.get('uis.eye_open_ratio_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_eye_open_ratio'),
-		step = calculate_float_step(face_editor_choices.face_editor_eye_open_ratio_range),
-		minimum = face_editor_choices.face_editor_eye_open_ratio_range[0],
-		maximum = face_editor_choices.face_editor_eye_open_ratio_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_LIP_OPEN_RATIO_SLIDER = gradio.Slider(
-		label = translator.get('uis.lip_open_ratio_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_lip_open_ratio'),
-		step = calculate_float_step(face_editor_choices.face_editor_lip_open_ratio_range),
-		minimum = face_editor_choices.face_editor_lip_open_ratio_range[0],
-		maximum = face_editor_choices.face_editor_lip_open_ratio_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_MOUTH_GRIM_SLIDER = gradio.Slider(
-		label = translator.get('uis.mouth_grim_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_mouth_grim'),
-		step = calculate_float_step(face_editor_choices.face_editor_mouth_grim_range),
-		minimum = face_editor_choices.face_editor_mouth_grim_range[0],
-		maximum = face_editor_choices.face_editor_mouth_grim_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_MOUTH_POUT_SLIDER = gradio.Slider(
-		label = translator.get('uis.mouth_pout_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_mouth_pout'),
-		step = calculate_float_step(face_editor_choices.face_editor_mouth_pout_range),
-		minimum = face_editor_choices.face_editor_mouth_pout_range[0],
-		maximum = face_editor_choices.face_editor_mouth_pout_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_MOUTH_PURSE_SLIDER = gradio.Slider(
-		label = translator.get('uis.mouth_purse_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_mouth_purse'),
-		step = calculate_float_step(face_editor_choices.face_editor_mouth_purse_range),
-		minimum = face_editor_choices.face_editor_mouth_purse_range[0],
-		maximum = face_editor_choices.face_editor_mouth_purse_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_MOUTH_SMILE_SLIDER = gradio.Slider(
-		label = translator.get('uis.mouth_smile_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_mouth_smile'),
-		step = calculate_float_step(face_editor_choices.face_editor_mouth_smile_range),
-		minimum = face_editor_choices.face_editor_mouth_smile_range[0],
-		maximum = face_editor_choices.face_editor_mouth_smile_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_MOUTH_POSITION_HORIZONTAL_SLIDER = gradio.Slider(
-		label = translator.get('uis.mouth_position_horizontal_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_mouth_position_horizontal'),
-		step = calculate_float_step(face_editor_choices.face_editor_mouth_position_horizontal_range),
-		minimum = face_editor_choices.face_editor_mouth_position_horizontal_range[0],
-		maximum = face_editor_choices.face_editor_mouth_position_horizontal_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_MOUTH_POSITION_VERTICAL_SLIDER = gradio.Slider(
-		label = translator.get('uis.mouth_position_vertical_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_mouth_position_vertical'),
-		step = calculate_float_step(face_editor_choices.face_editor_mouth_position_vertical_range),
-		minimum = face_editor_choices.face_editor_mouth_position_vertical_range[0],
-		maximum = face_editor_choices.face_editor_mouth_position_vertical_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_HEAD_PITCH_SLIDER = gradio.Slider(
-		label = translator.get('uis.head_pitch_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_head_pitch'),
-		step = calculate_float_step(face_editor_choices.face_editor_head_pitch_range),
-		minimum = face_editor_choices.face_editor_head_pitch_range[0],
-		maximum = face_editor_choices.face_editor_head_pitch_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_HEAD_YAW_SLIDER = gradio.Slider(
-		label = translator.get('uis.head_yaw_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_head_yaw'),
-		step = calculate_float_step(face_editor_choices.face_editor_head_yaw_range),
-		minimum = face_editor_choices.face_editor_head_yaw_range[0],
-		maximum = face_editor_choices.face_editor_head_yaw_range[-1],
-		visible = has_face_editor
-	)
-	FACE_EDITOR_HEAD_ROLL_SLIDER = gradio.Slider(
-		label = translator.get('uis.head_roll_slider', 'facefusion.processors.modules.face_editor'),
-		value = state_manager.get_item('face_editor_head_roll'),
-		step = calculate_float_step(face_editor_choices.face_editor_head_roll_range),
-		minimum = face_editor_choices.face_editor_head_roll_range[0],
-		maximum = face_editor_choices.face_editor_head_roll_range[-1],
-		visible = has_face_editor
-	)
+	with gradio.Row():
+		FACE_EDITOR_MODEL_DROPDOWN = gradio.Dropdown(
+			label = translator.get('uis.model_dropdown', MODULE_NAME),
+			choices = face_editor_choices.face_editor_models,
+			value = state_manager.get_item('face_editor_model'),
+			visible = has_face_editor
+		)
+		FACE_EDITOR_MODEL_HELP_BUTTON = help_helper.render_help_button('uis_help.model', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_EYEBROW_DIRECTION_SLIDER = gradio.Slider(
+			label = translator.get('uis.eyebrow_direction_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_eyebrow_direction'),
+			step = calculate_float_step(face_editor_choices.face_editor_eyebrow_direction_range),
+			minimum = face_editor_choices.face_editor_eyebrow_direction_range[0],
+			maximum = face_editor_choices.face_editor_eyebrow_direction_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_EYEBROW_DIRECTION_HELP_BUTTON = help_helper.render_help_button('uis_help.eyebrow_direction', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_EYE_GAZE_HORIZONTAL_SLIDER = gradio.Slider(
+			label = translator.get('uis.eye_gaze_horizontal_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_eye_gaze_horizontal'),
+			step = calculate_float_step(face_editor_choices.face_editor_eye_gaze_horizontal_range),
+			minimum = face_editor_choices.face_editor_eye_gaze_horizontal_range[0],
+			maximum = face_editor_choices.face_editor_eye_gaze_horizontal_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_EYE_GAZE_HORIZONTAL_HELP_BUTTON = help_helper.render_help_button('uis_help.eye_gaze_horizontal', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_EYE_GAZE_VERTICAL_SLIDER = gradio.Slider(
+			label = translator.get('uis.eye_gaze_vertical_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_eye_gaze_vertical'),
+			step = calculate_float_step(face_editor_choices.face_editor_eye_gaze_vertical_range),
+			minimum = face_editor_choices.face_editor_eye_gaze_vertical_range[0],
+			maximum = face_editor_choices.face_editor_eye_gaze_vertical_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_EYE_GAZE_VERTICAL_HELP_BUTTON = help_helper.render_help_button('uis_help.eye_gaze_vertical', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_EYE_OPEN_RATIO_SLIDER = gradio.Slider(
+			label = translator.get('uis.eye_open_ratio_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_eye_open_ratio'),
+			step = calculate_float_step(face_editor_choices.face_editor_eye_open_ratio_range),
+			minimum = face_editor_choices.face_editor_eye_open_ratio_range[0],
+			maximum = face_editor_choices.face_editor_eye_open_ratio_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_EYE_OPEN_RATIO_HELP_BUTTON = help_helper.render_help_button('uis_help.eye_open_ratio', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_LIP_OPEN_RATIO_SLIDER = gradio.Slider(
+			label = translator.get('uis.lip_open_ratio_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_lip_open_ratio'),
+			step = calculate_float_step(face_editor_choices.face_editor_lip_open_ratio_range),
+			minimum = face_editor_choices.face_editor_lip_open_ratio_range[0],
+			maximum = face_editor_choices.face_editor_lip_open_ratio_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_LIP_OPEN_RATIO_HELP_BUTTON = help_helper.render_help_button('uis_help.lip_open_ratio', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_MOUTH_GRIM_SLIDER = gradio.Slider(
+			label = translator.get('uis.mouth_grim_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_mouth_grim'),
+			step = calculate_float_step(face_editor_choices.face_editor_mouth_grim_range),
+			minimum = face_editor_choices.face_editor_mouth_grim_range[0],
+			maximum = face_editor_choices.face_editor_mouth_grim_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_MOUTH_GRIM_HELP_BUTTON = help_helper.render_help_button('uis_help.mouth_grim', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_MOUTH_POUT_SLIDER = gradio.Slider(
+			label = translator.get('uis.mouth_pout_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_mouth_pout'),
+			step = calculate_float_step(face_editor_choices.face_editor_mouth_pout_range),
+			minimum = face_editor_choices.face_editor_mouth_pout_range[0],
+			maximum = face_editor_choices.face_editor_mouth_pout_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_MOUTH_POUT_HELP_BUTTON = help_helper.render_help_button('uis_help.mouth_pout', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_MOUTH_PURSE_SLIDER = gradio.Slider(
+			label = translator.get('uis.mouth_purse_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_mouth_purse'),
+			step = calculate_float_step(face_editor_choices.face_editor_mouth_purse_range),
+			minimum = face_editor_choices.face_editor_mouth_purse_range[0],
+			maximum = face_editor_choices.face_editor_mouth_purse_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_MOUTH_PURSE_HELP_BUTTON = help_helper.render_help_button('uis_help.mouth_purse', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_MOUTH_SMILE_SLIDER = gradio.Slider(
+			label = translator.get('uis.mouth_smile_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_mouth_smile'),
+			step = calculate_float_step(face_editor_choices.face_editor_mouth_smile_range),
+			minimum = face_editor_choices.face_editor_mouth_smile_range[0],
+			maximum = face_editor_choices.face_editor_mouth_smile_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_MOUTH_SMILE_HELP_BUTTON = help_helper.render_help_button('uis_help.mouth_smile', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_MOUTH_POSITION_HORIZONTAL_SLIDER = gradio.Slider(
+			label = translator.get('uis.mouth_position_horizontal_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_mouth_position_horizontal'),
+			step = calculate_float_step(face_editor_choices.face_editor_mouth_position_horizontal_range),
+			minimum = face_editor_choices.face_editor_mouth_position_horizontal_range[0],
+			maximum = face_editor_choices.face_editor_mouth_position_horizontal_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_MOUTH_POSITION_HORIZONTAL_HELP_BUTTON = help_helper.render_help_button('uis_help.mouth_position_horizontal', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_MOUTH_POSITION_VERTICAL_SLIDER = gradio.Slider(
+			label = translator.get('uis.mouth_position_vertical_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_mouth_position_vertical'),
+			step = calculate_float_step(face_editor_choices.face_editor_mouth_position_vertical_range),
+			minimum = face_editor_choices.face_editor_mouth_position_vertical_range[0],
+			maximum = face_editor_choices.face_editor_mouth_position_vertical_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_MOUTH_POSITION_VERTICAL_HELP_BUTTON = help_helper.render_help_button('uis_help.mouth_position_vertical', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_HEAD_PITCH_SLIDER = gradio.Slider(
+			label = translator.get('uis.head_pitch_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_head_pitch'),
+			step = calculate_float_step(face_editor_choices.face_editor_head_pitch_range),
+			minimum = face_editor_choices.face_editor_head_pitch_range[0],
+			maximum = face_editor_choices.face_editor_head_pitch_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_HEAD_PITCH_HELP_BUTTON = help_helper.render_help_button('uis_help.head_pitch', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_HEAD_YAW_SLIDER = gradio.Slider(
+			label = translator.get('uis.head_yaw_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_head_yaw'),
+			step = calculate_float_step(face_editor_choices.face_editor_head_yaw_range),
+			minimum = face_editor_choices.face_editor_head_yaw_range[0],
+			maximum = face_editor_choices.face_editor_head_yaw_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_HEAD_YAW_HELP_BUTTON = help_helper.render_help_button('uis_help.head_yaw', MODULE_NAME, visible = has_face_editor)
+	with gradio.Row():
+		FACE_EDITOR_HEAD_ROLL_SLIDER = gradio.Slider(
+			label = translator.get('uis.head_roll_slider', MODULE_NAME),
+			value = state_manager.get_item('face_editor_head_roll'),
+			step = calculate_float_step(face_editor_choices.face_editor_head_roll_range),
+			minimum = face_editor_choices.face_editor_head_roll_range[0],
+			maximum = face_editor_choices.face_editor_head_roll_range[-1],
+			visible = has_face_editor
+		)
+		FACE_EDITOR_HEAD_ROLL_HELP_BUTTON = help_helper.render_help_button('uis_help.head_roll', MODULE_NAME, visible = has_face_editor)
 	register_ui_component('face_editor_model_dropdown', FACE_EDITOR_MODEL_DROPDOWN)
 	register_ui_component('face_editor_eyebrow_direction_slider', FACE_EDITOR_EYEBROW_DIRECTION_SLIDER)
 	register_ui_component('face_editor_eye_gaze_horizontal_slider', FACE_EDITOR_EYE_GAZE_HORIZONTAL_SLIDER)
@@ -195,15 +258,62 @@ def listen() -> None:
 	FACE_EDITOR_HEAD_PITCH_SLIDER.release(update_face_editor_head_pitch, inputs = FACE_EDITOR_HEAD_PITCH_SLIDER)
 	FACE_EDITOR_HEAD_YAW_SLIDER.release(update_face_editor_head_yaw, inputs = FACE_EDITOR_HEAD_YAW_SLIDER)
 	FACE_EDITOR_HEAD_ROLL_SLIDER.release(update_face_editor_head_roll, inputs = FACE_EDITOR_HEAD_ROLL_SLIDER)
+	help_helper.listen_help_button(FACE_EDITOR_MODEL_HELP_BUTTON, 'uis_help.model', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_EYEBROW_DIRECTION_HELP_BUTTON, 'uis_help.eyebrow_direction', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_EYE_GAZE_HORIZONTAL_HELP_BUTTON, 'uis_help.eye_gaze_horizontal', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_EYE_GAZE_VERTICAL_HELP_BUTTON, 'uis_help.eye_gaze_vertical', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_EYE_OPEN_RATIO_HELP_BUTTON, 'uis_help.eye_open_ratio', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_LIP_OPEN_RATIO_HELP_BUTTON, 'uis_help.lip_open_ratio', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_MOUTH_GRIM_HELP_BUTTON, 'uis_help.mouth_grim', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_MOUTH_POUT_HELP_BUTTON, 'uis_help.mouth_pout', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_MOUTH_PURSE_HELP_BUTTON, 'uis_help.mouth_purse', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_MOUTH_SMILE_HELP_BUTTON, 'uis_help.mouth_smile', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_MOUTH_POSITION_HORIZONTAL_HELP_BUTTON, 'uis_help.mouth_position_horizontal', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_MOUTH_POSITION_VERTICAL_HELP_BUTTON, 'uis_help.mouth_position_vertical', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_HEAD_PITCH_HELP_BUTTON, 'uis_help.head_pitch', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_HEAD_YAW_HELP_BUTTON, 'uis_help.head_yaw', MODULE_NAME)
+	help_helper.listen_help_button(FACE_EDITOR_HEAD_ROLL_HELP_BUTTON, 'uis_help.head_roll', MODULE_NAME)
 
 	processors_checkbox_group = get_ui_component('processors_checkbox_group')
 	if processors_checkbox_group:
-		processors_checkbox_group.change(remote_update, inputs = processors_checkbox_group, outputs = [ FACE_EDITOR_MODEL_DROPDOWN, FACE_EDITOR_EYEBROW_DIRECTION_SLIDER, FACE_EDITOR_EYE_GAZE_HORIZONTAL_SLIDER, FACE_EDITOR_EYE_GAZE_VERTICAL_SLIDER, FACE_EDITOR_EYE_OPEN_RATIO_SLIDER, FACE_EDITOR_LIP_OPEN_RATIO_SLIDER, FACE_EDITOR_MOUTH_GRIM_SLIDER, FACE_EDITOR_MOUTH_POUT_SLIDER, FACE_EDITOR_MOUTH_PURSE_SLIDER, FACE_EDITOR_MOUTH_SMILE_SLIDER, FACE_EDITOR_MOUTH_POSITION_HORIZONTAL_SLIDER, FACE_EDITOR_MOUTH_POSITION_VERTICAL_SLIDER, FACE_EDITOR_HEAD_PITCH_SLIDER, FACE_EDITOR_HEAD_YAW_SLIDER, FACE_EDITOR_HEAD_ROLL_SLIDER ])
+		processors_checkbox_group.change(remote_update, inputs = processors_checkbox_group, outputs = [
+			FACE_EDITOR_MODEL_DROPDOWN, FACE_EDITOR_MODEL_HELP_BUTTON,
+			FACE_EDITOR_EYEBROW_DIRECTION_SLIDER, FACE_EDITOR_EYEBROW_DIRECTION_HELP_BUTTON,
+			FACE_EDITOR_EYE_GAZE_HORIZONTAL_SLIDER, FACE_EDITOR_EYE_GAZE_HORIZONTAL_HELP_BUTTON,
+			FACE_EDITOR_EYE_GAZE_VERTICAL_SLIDER, FACE_EDITOR_EYE_GAZE_VERTICAL_HELP_BUTTON,
+			FACE_EDITOR_EYE_OPEN_RATIO_SLIDER, FACE_EDITOR_EYE_OPEN_RATIO_HELP_BUTTON,
+			FACE_EDITOR_LIP_OPEN_RATIO_SLIDER, FACE_EDITOR_LIP_OPEN_RATIO_HELP_BUTTON,
+			FACE_EDITOR_MOUTH_GRIM_SLIDER, FACE_EDITOR_MOUTH_GRIM_HELP_BUTTON,
+			FACE_EDITOR_MOUTH_POUT_SLIDER, FACE_EDITOR_MOUTH_POUT_HELP_BUTTON,
+			FACE_EDITOR_MOUTH_PURSE_SLIDER, FACE_EDITOR_MOUTH_PURSE_HELP_BUTTON,
+			FACE_EDITOR_MOUTH_SMILE_SLIDER, FACE_EDITOR_MOUTH_SMILE_HELP_BUTTON,
+			FACE_EDITOR_MOUTH_POSITION_HORIZONTAL_SLIDER, FACE_EDITOR_MOUTH_POSITION_HORIZONTAL_HELP_BUTTON,
+			FACE_EDITOR_MOUTH_POSITION_VERTICAL_SLIDER, FACE_EDITOR_MOUTH_POSITION_VERTICAL_HELP_BUTTON,
+			FACE_EDITOR_HEAD_PITCH_SLIDER, FACE_EDITOR_HEAD_PITCH_HELP_BUTTON,
+			FACE_EDITOR_HEAD_YAW_SLIDER, FACE_EDITOR_HEAD_YAW_HELP_BUTTON,
+			FACE_EDITOR_HEAD_ROLL_SLIDER, FACE_EDITOR_HEAD_ROLL_HELP_BUTTON
+		])
 
 
-def remote_update(processors : List[str]) -> Tuple[gradio.Dropdown, gradio.Slider, gradio.Slider, gradio.Slider, gradio.Slider, gradio.Slider, gradio.Slider, gradio.Slider, gradio.Slider, gradio.Slider, gradio.Slider, gradio.Slider, gradio.Slider, gradio.Slider, gradio.Slider]:
+def remote_update(processors : List[str]) -> Tuple[gradio.Dropdown, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button, gradio.Slider, gradio.Button]:
 	has_face_editor = 'face_editor' in processors
-	return gradio.Dropdown(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor), gradio.Slider(visible = has_face_editor)
+	return (
+		gradio.Dropdown(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor),
+		gradio.Slider(visible = has_face_editor), gradio.Button(visible = has_face_editor)
+	)
 
 
 def update_face_editor_model(face_editor_model : FaceEditorModel) -> gradio.Dropdown:

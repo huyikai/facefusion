@@ -3,13 +3,14 @@ import gradio
 from facefusion import translator
 
 
-def render_help_button(notation : str, module_name : str = 'facefusion') -> gradio.Button:
+def render_help_button(notation : str, module_name : str = 'facefusion', visible : bool = True) -> gradio.Button:
 	return gradio.Button(
 		value = 'ℹ️',
 		size = 'sm',
 		min_width = 40,
 		elem_classes = [ 'ff-help-button' ],
-		elem_id = None
+		elem_id = None,
+		visible = visible
 	)
 
 
