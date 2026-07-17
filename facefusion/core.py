@@ -6,6 +6,7 @@ import sys
 from time import time
 
 from facefusion import benchmarker, cli_helper, content_analyser, hash_helper, logger, state_manager, translator
+from facefusion.locales_helper import resolve_language
 from facefusion.args import apply_args, collect_job_args, reduce_job_args, reduce_step_args
 from facefusion.download import conditional_download_hashes, conditional_download_sources
 from facefusion.exit_helper import hard_exit, signal_exit
@@ -27,6 +28,8 @@ def cli() -> None:
 		if validate_args(program):
 			args = vars(program.parse_args())
 			apply_args(args, state_manager.init_item)
+			preference = state_manager.get_item('language') or 'system'
+			translator.set_language(resolve_language(preference))
 
 			if state_manager.get_item('command'):
 				logger.init(state_manager.get_item('log_level'))

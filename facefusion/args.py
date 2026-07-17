@@ -1,4 +1,4 @@
-from facefusion import state_manager
+from facefusion import config, state_manager
 from facefusion.filesystem import get_file_name, is_video, resolve_file_paths
 from facefusion.jobs import job_store
 from facefusion.normalizer import normalize_fps, normalize_space
@@ -70,6 +70,10 @@ def apply_args(args : Args, apply_state_item : ApplyStateItem) -> None:
 	apply_state_item('open_browser', args.get('open_browser'))
 	apply_state_item('ui_layouts', args.get('ui_layouts'))
 	apply_state_item('ui_workflow', args.get('ui_workflow'))
+	language_preference = config.get_str_value('uis', 'language', 'system') or 'system'
+	if language_preference not in ('system', 'en', 'zh'):
+		language_preference = 'system'
+	apply_state_item('language', language_preference)
 	apply_state_item('execution_device_ids', args.get('execution_device_ids'))
 	apply_state_item('execution_providers', args.get('execution_providers'))
 	apply_state_item('execution_thread_count', args.get('execution_thread_count'))
