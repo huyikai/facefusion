@@ -32,4 +32,5 @@ def update_language(language : LanguagePreference) -> None:
 		language = 'system'
 	state_manager.set_item('language', language)
 	config.set_str_value('uis', 'language', language)
+	# Gradio Blocks are built once at startup; restart is required (not a browser refresh).
 	gradio.Info(translator.get('uis.language_saved'))
