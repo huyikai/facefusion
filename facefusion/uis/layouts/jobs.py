@@ -1,7 +1,7 @@
 import gradio
 
 from facefusion import state_manager
-from facefusion.uis.components import about, job_list, job_list_options
+from facefusion.uis.components import about, job_list, job_list_options, language
 
 
 def pre_check() -> bool:
@@ -15,6 +15,8 @@ def render() -> gradio.Blocks:
 				with gradio.Blocks():
 					about.render()
 				with gradio.Blocks():
+					language.render()
+				with gradio.Blocks():
 					job_list_options.render()
 			with gradio.Column(scale = 11):
 				with gradio.Blocks():
@@ -23,6 +25,7 @@ def render() -> gradio.Blocks:
 
 
 def listen() -> None:
+	language.listen()
 	job_list_options.listen()
 	job_list.listen()
 

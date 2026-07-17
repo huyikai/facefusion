@@ -1,7 +1,7 @@
 import gradio
 
 from facefusion import state_manager
-from facefusion.uis.components import about, age_modifier_options, background_remover_options, deep_swapper_options, download, execution, execution_thread_count, expression_restorer_options, face_debugger_options, face_editor_options, face_enhancer_options, face_swapper_options, frame_colorizer_options, frame_enhancer_options, lip_syncer_options, processors, webcam, webcam_options
+from facefusion.uis.components import about, age_modifier_options, background_remover_options, deep_swapper_options, download, execution, execution_thread_count, expression_restorer_options, face_debugger_options, face_editor_options, face_enhancer_options, face_swapper_options, frame_colorizer_options, frame_enhancer_options, language, lip_syncer_options, processors, webcam, webcam_options
 
 
 def pre_check() -> bool:
@@ -14,6 +14,8 @@ def render() -> gradio.Blocks:
 			with gradio.Column(scale = 4):
 				with gradio.Blocks():
 					about.render()
+				with gradio.Blocks():
+					language.render()
 				with gradio.Blocks():
 					webcam_options.render()
 				with gradio.Blocks():
@@ -52,6 +54,7 @@ def render() -> gradio.Blocks:
 
 
 def listen() -> None:
+	language.listen()
 	processors.listen()
 	age_modifier_options.listen()
 	background_remover_options.listen()
