@@ -1,3 +1,6 @@
+import configparser
+from pathlib import Path
+
 import pytest
 
 from facefusion import config, state_manager
@@ -82,3 +85,17 @@ def test_get_int_list() -> None:
 	assert config.get_int_list('int_list', 'unset', '3 2 1') == [ 3, 2, 1 ]
 	assert config.get_int_list('int_list', 'unset') is None
 	assert config.get_int_list('int_list', 'invalid') is None
+
+
+def test_set_str_value_writes_ini(tmp_path: Path, monkeypatch) -> None:
+	ini_path = tmp_path / 'facefusion.ini'
+	ini_path.write_text('[uis]\nlanguage = system\n', encoding='utf-8')
+	state_manager.init_item('config_path', str(ini_path))
+	config.get_static_config_parser.cache_clear()
+
+	config.set_str_value('uis', 'language', 'zh')
+
+	parser = configparser.ConfigParser()
+	parser.read(ini_path, encoding='utf-8')
+	assert parser.get('uis', 'language') == 'zh'
+	assert config.get_str_value('uis', 'language') == 'zh'

@@ -63,3 +63,15 @@ def get_int_list(section : str, option : str, fallback : Optional[str] = None) -
 	if fallback:
 		return list(map(int, fallback.split()))
 	return None
+
+
+def set_str_value(section : str, option : str, value : str) -> None:
+	config_path = state_manager.get_item('config_path')
+	config_parser = ConfigParser()
+	config_parser.read(config_path, encoding = 'utf-8')
+	if not config_parser.has_section(section):
+		config_parser.add_section(section)
+	config_parser.set(section, option, value)
+	with open(config_path, 'w', encoding = 'utf-8') as config_file:
+		config_parser.write(config_file)
+	get_static_config_parser.cache_clear()
