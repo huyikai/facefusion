@@ -2,7 +2,8 @@
 
 **Date:** 2026-07-17  
 **Repo:** https://github.com/huyikai/facefusion (fork of facefusion/facefusion)  
-**Status:** Approved for implementation after user review of this spec
+**Status:** Approved for implementation after user review of this spec  
+**中文版：** [2026-07-17-ui-language-design.zh.md](./2026-07-17-ui-language-design.zh.md)
 
 ## Goal
 
@@ -219,3 +220,4 @@ Only used for language preference in v1 (keep scope tight).
 - 2026-07-17: Initial approved design (UI language preference)
 - 2026-07-17: Add zh technical label format `id【gloss】`
 - 2026-07-17: Add `ℹ️` help icon UX; v1 limited to processors + major processor options
+- 2026-07-17: Add Chinese version of this spec (`2026-07-17-ui-language-design.zh.md`)
