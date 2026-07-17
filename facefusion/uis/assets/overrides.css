@@ -165,3 +165,10 @@
 	font-size: 0.75rem;
 	text-transform: uppercase;
 }
+
+:root:root:root:root .ff-help-button
+{
+	min-width: 2.5rem !important;
+	max-width: 2.5rem;
+	padding: 0 !important;
+}
