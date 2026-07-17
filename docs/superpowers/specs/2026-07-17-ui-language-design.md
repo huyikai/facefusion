@@ -12,7 +12,7 @@ Add a UI language preference so users can:
 1. Default to the system language
 2. Override via a dropdown in the web UI
 3. Persist the preference in `facefusion.ini`
-4. Apply the change after a page refresh (no hot-reload)
+4. Apply the change after restarting the application (no hot-reload; browser refresh is not enough)
 
 ## Decisions (locked)
 
@@ -20,7 +20,7 @@ Add a UI language preference so users can:
 |---|---|
 | Switching surface | UI only (no `--language` CLI for v1) |
 | Persistence | Write `uis.language` into `facefusion.ini` |
-| Apply timing | Save + toast; user refreshes page |
+| Apply timing | Save + toast; user restarts the application |
 | Approach | Config-driven + UI dropdown (Approach A) |
 | Languages (v1) | `system` / `en` / `zh` |
 | Technical choice labels (zh) | Keep English id + append `【中文说明】` (do not replace the id) |
@@ -71,9 +71,9 @@ New component: `facefusion/uis/components/language.py`
 
 1. Update in-memory state (`language` preference)
 2. Persist to `facefusion.ini` → `[uis] language = ...`
-3. Show `gr.Info` toast: language saved; refresh the page to apply
+3. Show `gr.Info` toast: language saved; restart the application to apply
 
-No live re-labeling of existing Gradio components.
+No live re-labeling of existing Gradio components (Blocks are built once at process start).
 
 ## Technical choice label convention (Chinese UI)
 
@@ -182,7 +182,7 @@ Only used for language preference in v1 (keep scope tight).
 
 ## Non-goals (v1)
 
-- Hot-swap labels without refresh
+- Hot-swap labels without application restart
 - Translating Gradio built-in chrome (upload prompts, etc.)
 - Languages beyond `en` / `zh`
 - CLI `--language`
@@ -195,7 +195,7 @@ Only used for language preference in v1 (keep scope tight).
 3. Unit: preference `zh` / `en` ignores system
 4. Unit: missing zh key falls back to en
 5. Unit: `set_str_value` writes ini and subsequent read returns new value
-6. Manual: change dropdown → ini updated → refresh → UI labels match selection
+6. Manual: change dropdown → ini updated → restart app → UI labels match selection
 7. Manual (zh): processors show `id【gloss】`; `ℹ️` reveals short help for processors and key processor options
 8. Manual (en): processors stay plain ids; `ℹ️` still available with English help
 
@@ -210,7 +210,7 @@ Only used for language preference in v1 (keep scope tight).
 - Fresh install with empty `language` follows system locale
 - User can force English or Chinese from UI
 - Choice survives restart via `facefusion.ini`
-- Refresh applies language; toast tells user to refresh
+- Application restart applies language; toast tells user to restart
 - Headless / non-UI commands remain functional (language resolve from ini/system still safe)
 - In zh UI, processor choices use `id【gloss】` while values remain raw ids
 - Processor group and major processor options expose `ℹ️` help in both languages
@@ -221,3 +221,4 @@ Only used for language preference in v1 (keep scope tight).
 - 2026-07-17: Add zh technical label format `id【gloss】`
 - 2026-07-17: Add `ℹ️` help icon UX; v1 limited to processors + major processor options
 - 2026-07-17: Add Chinese version of this spec (`2026-07-17-ui-language-design.zh.md`)
+- 2026-07-17: Clarify apply timing — restart application (Gradio Blocks are not rebuilt on browser refresh)
