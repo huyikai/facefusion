@@ -4,6 +4,7 @@ import gradio
 
 from facefusion import state_manager, translator
 from facefusion.filesystem import get_file_name, resolve_file_paths
+from facefusion.locales_helper import format_choice_label
 from facefusion.processors.core import get_processors_modules
 from facefusion.uis.core import register_ui_component
 
@@ -15,7 +16,7 @@ def render() -> None:
 
 	PROCESSORS_CHECKBOX_GROUP = gradio.CheckboxGroup(
 		label = translator.get('uis.processors_checkbox_group'),
-		choices = sort_processors(state_manager.get_item('processors')),
+		choices = build_processor_choices(state_manager.get_item('processors')),
 		value = state_manager.get_item('processors')
 	)
 	register_ui_component('processors_checkbox_group', PROCESSORS_CHECKBOX_GROUP)
@@ -35,7 +36,16 @@ def update_processors(processors : List[str]) -> gradio.CheckboxGroup:
 			return gradio.CheckboxGroup()
 
 	state_manager.set_item('processors', processors)
-	return gradio.CheckboxGroup(value = state_manager.get_item('processors'), choices = sort_processors(state_manager.get_item('processors')))
+	return gradio.CheckboxGroup(value = state_manager.get_item('processors'), choices = build_processor_choices(state_manager.get_item('processors')))
+
+
+def build_processor_choices(processors : List[str]) -> List[tuple[str, str]]:
+	choices = []
+	for processor in sort_processors(processors):
+		gloss = translator.get('choices.processors.' + processor)
+		label = format_choice_label(processor, gloss)
+		choices.append((label, processor))
+	return choices
 
 
 def sort_processors(processors : List[str]) -> List[str]:
