@@ -12,49 +12,59 @@ from facefusion.uis.core import get_ui_component, register_ui_component
 
 MODULE_NAME = 'facefusion.processors.modules.expression_restorer'
 
+EXPRESSION_RESTORER_MODEL_LABEL_ROW : Optional[gradio.Row] = None
 EXPRESSION_RESTORER_MODEL_DROPDOWN : Optional[gradio.Dropdown] = None
 EXPRESSION_RESTORER_MODEL_HELP_BUTTON : Optional[gradio.Button] = None
+EXPRESSION_RESTORER_FACTOR_LABEL_ROW : Optional[gradio.Row] = None
 EXPRESSION_RESTORER_FACTOR_SLIDER : Optional[gradio.Slider] = None
 EXPRESSION_RESTORER_FACTOR_HELP_BUTTON : Optional[gradio.Button] = None
+EXPRESSION_RESTORER_AREAS_LABEL_ROW : Optional[gradio.Row] = None
 EXPRESSION_RESTORER_AREAS_CHECKBOX_GROUP : Optional[gradio.CheckboxGroup] = None
 EXPRESSION_RESTORER_AREAS_HELP_BUTTON : Optional[gradio.Button] = None
 
 
 def render() -> None:
+	global EXPRESSION_RESTORER_MODEL_LABEL_ROW
 	global EXPRESSION_RESTORER_MODEL_DROPDOWN
 	global EXPRESSION_RESTORER_MODEL_HELP_BUTTON
+	global EXPRESSION_RESTORER_FACTOR_LABEL_ROW
 	global EXPRESSION_RESTORER_FACTOR_SLIDER
 	global EXPRESSION_RESTORER_FACTOR_HELP_BUTTON
+	global EXPRESSION_RESTORER_AREAS_LABEL_ROW
 	global EXPRESSION_RESTORER_AREAS_CHECKBOX_GROUP
 	global EXPRESSION_RESTORER_AREAS_HELP_BUTTON
 
 	has_expression_restorer = 'expression_restorer' in state_manager.get_item('processors')
-	with gradio.Row():
-		EXPRESSION_RESTORER_MODEL_DROPDOWN = gradio.Dropdown(
-			label = translator.get('uis.model_dropdown', MODULE_NAME),
-			choices = expression_restorer_choices.expression_restorer_models,
-			value = state_manager.get_item('expression_restorer_model'),
-			visible = has_expression_restorer
-		)
-		EXPRESSION_RESTORER_MODEL_HELP_BUTTON = help_helper.render_help_button('uis_help.model', MODULE_NAME, visible = has_expression_restorer)
-	with gradio.Row():
-		EXPRESSION_RESTORER_FACTOR_SLIDER = gradio.Slider(
-			label = translator.get('uis.factor_slider', MODULE_NAME),
-			value = state_manager.get_item('expression_restorer_factor'),
-			step = calculate_float_step(expression_restorer_choices.expression_restorer_factor_range),
-			minimum = expression_restorer_choices.expression_restorer_factor_range[0],
-			maximum = expression_restorer_choices.expression_restorer_factor_range[-1],
-			visible = has_expression_restorer
-		)
-		EXPRESSION_RESTORER_FACTOR_HELP_BUTTON = help_helper.render_help_button('uis_help.factor', MODULE_NAME, visible = has_expression_restorer)
-	with gradio.Row():
-		EXPRESSION_RESTORER_AREAS_CHECKBOX_GROUP = gradio.CheckboxGroup(
-			label = translator.get('uis.areas_checkbox_group', MODULE_NAME),
-			choices = expression_restorer_choices.expression_restorer_areas,
-			value = state_manager.get_item('expression_restorer_areas'),
-			visible = has_expression_restorer
-		)
-		EXPRESSION_RESTORER_AREAS_HELP_BUTTON = help_helper.render_help_button('uis_help.areas', MODULE_NAME, visible = has_expression_restorer)
+	model_label = translator.get('uis.model_dropdown', MODULE_NAME)
+	factor_label = translator.get('uis.factor_slider', MODULE_NAME)
+	areas_label = translator.get('uis.areas_checkbox_group', MODULE_NAME)
+
+	EXPRESSION_RESTORER_MODEL_LABEL_ROW, EXPRESSION_RESTORER_MODEL_HELP_BUTTON = help_helper.render_help_label(model_label, 'uis_help.model', MODULE_NAME, visible = has_expression_restorer)
+	EXPRESSION_RESTORER_MODEL_DROPDOWN = gradio.Dropdown(
+		label = model_label,
+		show_label = False,
+		choices = expression_restorer_choices.expression_restorer_models,
+		value = state_manager.get_item('expression_restorer_model'),
+		visible = has_expression_restorer
+	)
+	EXPRESSION_RESTORER_FACTOR_LABEL_ROW, EXPRESSION_RESTORER_FACTOR_HELP_BUTTON = help_helper.render_help_label(factor_label, 'uis_help.factor', MODULE_NAME, visible = has_expression_restorer)
+	EXPRESSION_RESTORER_FACTOR_SLIDER = gradio.Slider(
+		label = factor_label,
+		show_label = False,
+		value = state_manager.get_item('expression_restorer_factor'),
+		step = calculate_float_step(expression_restorer_choices.expression_restorer_factor_range),
+		minimum = expression_restorer_choices.expression_restorer_factor_range[0],
+		maximum = expression_restorer_choices.expression_restorer_factor_range[-1],
+		visible = has_expression_restorer
+	)
+	EXPRESSION_RESTORER_AREAS_LABEL_ROW, EXPRESSION_RESTORER_AREAS_HELP_BUTTON = help_helper.render_help_label(areas_label, 'uis_help.areas', MODULE_NAME, visible = has_expression_restorer)
+	EXPRESSION_RESTORER_AREAS_CHECKBOX_GROUP = gradio.CheckboxGroup(
+		label = areas_label,
+		show_label = False,
+		choices = expression_restorer_choices.expression_restorer_areas,
+		value = state_manager.get_item('expression_restorer_areas'),
+		visible = has_expression_restorer
+	)
 	register_ui_component('expression_restorer_model_dropdown', EXPRESSION_RESTORER_MODEL_DROPDOWN)
 	register_ui_component('expression_restorer_factor_slider', EXPRESSION_RESTORER_FACTOR_SLIDER)
 	register_ui_component('expression_restorer_areas_checkbox_group', EXPRESSION_RESTORER_AREAS_CHECKBOX_GROUP)
@@ -70,12 +80,12 @@ def listen() -> None:
 
 	processors_checkbox_group = get_ui_component('processors_checkbox_group')
 	if processors_checkbox_group:
-		processors_checkbox_group.change(remote_update, inputs = processors_checkbox_group, outputs = [ EXPRESSION_RESTORER_MODEL_DROPDOWN, EXPRESSION_RESTORER_MODEL_HELP_BUTTON, EXPRESSION_RESTORER_FACTOR_SLIDER, EXPRESSION_RESTORER_FACTOR_HELP_BUTTON, EXPRESSION_RESTORER_AREAS_CHECKBOX_GROUP, EXPRESSION_RESTORER_AREAS_HELP_BUTTON ])
+		processors_checkbox_group.change(remote_update, inputs = processors_checkbox_group, outputs = [ EXPRESSION_RESTORER_MODEL_LABEL_ROW, EXPRESSION_RESTORER_MODEL_DROPDOWN, EXPRESSION_RESTORER_FACTOR_LABEL_ROW, EXPRESSION_RESTORER_FACTOR_SLIDER, EXPRESSION_RESTORER_AREAS_LABEL_ROW, EXPRESSION_RESTORER_AREAS_CHECKBOX_GROUP ])
 
 
-def remote_update(processors : List[str]) -> Tuple[gradio.Dropdown, gradio.Button, gradio.Slider, gradio.Button, gradio.CheckboxGroup, gradio.Button]:
+def remote_update(processors : List[str]) -> Tuple[gradio.Row, gradio.Dropdown, gradio.Row, gradio.Slider, gradio.Row, gradio.CheckboxGroup]:
 	has_expression_restorer = 'expression_restorer' in processors
-	return gradio.Dropdown(visible = has_expression_restorer), gradio.Button(visible = has_expression_restorer), gradio.Slider(visible = has_expression_restorer), gradio.Button(visible = has_expression_restorer), gradio.CheckboxGroup(visible = has_expression_restorer), gradio.Button(visible = has_expression_restorer)
+	return gradio.Row(visible = has_expression_restorer), gradio.Dropdown(visible = has_expression_restorer), gradio.Row(visible = has_expression_restorer), gradio.Slider(visible = has_expression_restorer), gradio.Row(visible = has_expression_restorer), gradio.CheckboxGroup(visible = has_expression_restorer)
 
 
 def update_expression_restorer_model(expression_restorer_model : ExpressionRestorerModel) -> gradio.Dropdown:

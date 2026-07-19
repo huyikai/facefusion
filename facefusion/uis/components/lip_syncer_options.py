@@ -12,37 +12,44 @@ from facefusion.uis.core import get_ui_component, register_ui_component
 
 MODULE_NAME = 'facefusion.processors.modules.lip_syncer'
 
+LIP_SYNCER_MODEL_LABEL_ROW : Optional[gradio.Row] = None
 LIP_SYNCER_MODEL_DROPDOWN : Optional[gradio.Dropdown] = None
 LIP_SYNCER_MODEL_HELP_BUTTON : Optional[gradio.Button] = None
+LIP_SYNCER_WEIGHT_LABEL_ROW : Optional[gradio.Row] = None
 LIP_SYNCER_WEIGHT_SLIDER : Optional[gradio.Slider] = None
 LIP_SYNCER_WEIGHT_HELP_BUTTON : Optional[gradio.Button] = None
 
 
 def render() -> None:
+	global LIP_SYNCER_MODEL_LABEL_ROW
 	global LIP_SYNCER_MODEL_DROPDOWN
 	global LIP_SYNCER_MODEL_HELP_BUTTON
+	global LIP_SYNCER_WEIGHT_LABEL_ROW
 	global LIP_SYNCER_WEIGHT_SLIDER
 	global LIP_SYNCER_WEIGHT_HELP_BUTTON
 
 	has_lip_syncer = 'lip_syncer' in state_manager.get_item('processors')
-	with gradio.Row():
-		LIP_SYNCER_MODEL_DROPDOWN = gradio.Dropdown(
-			label = translator.get('uis.model_dropdown', MODULE_NAME),
-			choices = lip_syncer_choices.lip_syncer_models,
-			value = state_manager.get_item('lip_syncer_model'),
-			visible = has_lip_syncer
-		)
-		LIP_SYNCER_MODEL_HELP_BUTTON = help_helper.render_help_button('uis_help.model', MODULE_NAME, visible = has_lip_syncer)
-	with gradio.Row():
-		LIP_SYNCER_WEIGHT_SLIDER = gradio.Slider(
-			label = translator.get('uis.weight_slider', MODULE_NAME),
-			value = state_manager.get_item('lip_syncer_weight'),
-			step = calculate_float_step(lip_syncer_choices.lip_syncer_weight_range),
-			minimum = lip_syncer_choices.lip_syncer_weight_range[0],
-			maximum = lip_syncer_choices.lip_syncer_weight_range[-1],
-			visible = has_lip_syncer
-		)
-		LIP_SYNCER_WEIGHT_HELP_BUTTON = help_helper.render_help_button('uis_help.weight', MODULE_NAME, visible = has_lip_syncer)
+	model_label = translator.get('uis.model_dropdown', MODULE_NAME)
+	weight_label = translator.get('uis.weight_slider', MODULE_NAME)
+
+	LIP_SYNCER_MODEL_LABEL_ROW, LIP_SYNCER_MODEL_HELP_BUTTON = help_helper.render_help_label(model_label, 'uis_help.model', MODULE_NAME, visible = has_lip_syncer)
+	LIP_SYNCER_MODEL_DROPDOWN = gradio.Dropdown(
+		label = model_label,
+		show_label = False,
+		choices = lip_syncer_choices.lip_syncer_models,
+		value = state_manager.get_item('lip_syncer_model'),
+		visible = has_lip_syncer
+	)
+	LIP_SYNCER_WEIGHT_LABEL_ROW, LIP_SYNCER_WEIGHT_HELP_BUTTON = help_helper.render_help_label(weight_label, 'uis_help.weight', MODULE_NAME, visible = has_lip_syncer)
+	LIP_SYNCER_WEIGHT_SLIDER = gradio.Slider(
+		label = weight_label,
+		show_label = False,
+		value = state_manager.get_item('lip_syncer_weight'),
+		step = calculate_float_step(lip_syncer_choices.lip_syncer_weight_range),
+		minimum = lip_syncer_choices.lip_syncer_weight_range[0],
+		maximum = lip_syncer_choices.lip_syncer_weight_range[-1],
+		visible = has_lip_syncer
+	)
 	register_ui_component('lip_syncer_model_dropdown', LIP_SYNCER_MODEL_DROPDOWN)
 	register_ui_component('lip_syncer_weight_slider', LIP_SYNCER_WEIGHT_SLIDER)
 
@@ -55,12 +62,12 @@ def listen() -> None:
 
 	processors_checkbox_group = get_ui_component('processors_checkbox_group')
 	if processors_checkbox_group:
-		processors_checkbox_group.change(remote_update, inputs = processors_checkbox_group, outputs = [ LIP_SYNCER_MODEL_DROPDOWN, LIP_SYNCER_MODEL_HELP_BUTTON, LIP_SYNCER_WEIGHT_SLIDER, LIP_SYNCER_WEIGHT_HELP_BUTTON ])
+		processors_checkbox_group.change(remote_update, inputs = processors_checkbox_group, outputs = [ LIP_SYNCER_MODEL_LABEL_ROW, LIP_SYNCER_MODEL_DROPDOWN, LIP_SYNCER_WEIGHT_LABEL_ROW, LIP_SYNCER_WEIGHT_SLIDER ])
 
 
-def remote_update(processors : List[str]) -> Tuple[gradio.Dropdown, gradio.Button, gradio.Slider, gradio.Button]:
+def remote_update(processors : List[str]) -> Tuple[gradio.Row, gradio.Dropdown, gradio.Row, gradio.Slider]:
 	has_lip_syncer = 'lip_syncer' in processors
-	return gradio.Dropdown(visible = has_lip_syncer), gradio.Button(visible = has_lip_syncer), gradio.Slider(visible = has_lip_syncer), gradio.Button(visible = has_lip_syncer)
+	return gradio.Row(visible = has_lip_syncer), gradio.Dropdown(visible = has_lip_syncer), gradio.Row(visible = has_lip_syncer), gradio.Slider(visible = has_lip_syncer)
 
 
 def update_lip_syncer_model(lip_syncer_model : LipSyncerModel) -> gradio.Dropdown:

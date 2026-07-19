@@ -166,9 +166,64 @@
 	text-transform: uppercase;
 }
 
-:root:root:root:root .ff-help-button
+/* Title + ℹ️ on one row; control stays full width below. */
+:root:root:root:root .ff-help-label-row
 {
-	min-width: 2.5rem !important;
-	max-width: 2.5rem;
+	align-items: center !important;
+	justify-content: flex-start !important;
+	gap: 0.35rem !important;
+	margin: 0 !important;
 	padding: 0 !important;
+	min-height: unset !important;
+	flex-wrap: nowrap !important;
+}
+
+:root:root:root:root .ff-help-label-row > *
+{
+	width: auto !important;
+	flex: 0 0 auto !important;
+	min-width: 0 !important;
+	max-width: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	background: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+
+:root:root:root:root .ff-help-label,
+:root:root:root:root .ff-help-label .prose,
+:root:root:root:root .ff-help-label .html-container
+{
+	padding: 0 !important;
+	margin: 0 !important;
+	min-height: unset !important;
+}
+
+:root:root:root:root .ff-help-label-text
+{
+	display: inline-block;
+	background: var(--block-title-background-fill);
+	color: var(--block-title-text-color);
+	font-size: var(--block-title-text-size);
+	font-weight: var(--block-title-text-weight);
+	padding: var(--block-title-padding);
+	border-radius: var(--block-title-radius);
+	line-height: 1.25;
+	white-space: nowrap;
+}
+
+:root:root:root:root button.ff-help-button
+{
+	min-width: 1.25rem !important;
+	max-width: 1.25rem;
+	width: 1.25rem !important;
+	height: 1.25rem !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	background: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	font-size: 0.8125rem;
+	line-height: 1;
 }

@@ -10,23 +10,27 @@ from facefusion.uis.core import get_ui_component, register_ui_component
 
 MODULE_NAME = 'facefusion.processors.modules.face_debugger'
 
+FACE_DEBUGGER_ITEMS_LABEL_ROW : Optional[gradio.Row] = None
 FACE_DEBUGGER_ITEMS_CHECKBOX_GROUP : Optional[gradio.CheckboxGroup] = None
 FACE_DEBUGGER_ITEMS_HELP_BUTTON : Optional[gradio.Button] = None
 
 
 def render() -> None:
+	global FACE_DEBUGGER_ITEMS_LABEL_ROW
 	global FACE_DEBUGGER_ITEMS_CHECKBOX_GROUP
 	global FACE_DEBUGGER_ITEMS_HELP_BUTTON
 
 	has_face_debugger = 'face_debugger' in state_manager.get_item('processors')
-	with gradio.Row():
-		FACE_DEBUGGER_ITEMS_CHECKBOX_GROUP = gradio.CheckboxGroup(
-			label = translator.get('uis.items_checkbox_group', MODULE_NAME),
-			choices = face_debugger_choices.face_debugger_items,
-			value = state_manager.get_item('face_debugger_items'),
-			visible = has_face_debugger
-		)
-		FACE_DEBUGGER_ITEMS_HELP_BUTTON = help_helper.render_help_button('uis_help.items', MODULE_NAME, visible = has_face_debugger)
+	items_label = translator.get('uis.items_checkbox_group', MODULE_NAME)
+
+	FACE_DEBUGGER_ITEMS_LABEL_ROW, FACE_DEBUGGER_ITEMS_HELP_BUTTON = help_helper.render_help_label(items_label, 'uis_help.items', MODULE_NAME, visible = has_face_debugger)
+	FACE_DEBUGGER_ITEMS_CHECKBOX_GROUP = gradio.CheckboxGroup(
+		label = items_label,
+		show_label = False,
+		choices = face_debugger_choices.face_debugger_items,
+		value = state_manager.get_item('face_debugger_items'),
+		visible = has_face_debugger
+	)
 	register_ui_component('face_debugger_items_checkbox_group', FACE_DEBUGGER_ITEMS_CHECKBOX_GROUP)
 
 
@@ -36,12 +40,12 @@ def listen() -> None:
 
 	processors_checkbox_group = get_ui_component('processors_checkbox_group')
 	if processors_checkbox_group:
-		processors_checkbox_group.change(remote_update, inputs = processors_checkbox_group, outputs = [ FACE_DEBUGGER_ITEMS_CHECKBOX_GROUP, FACE_DEBUGGER_ITEMS_HELP_BUTTON ])
+		processors_checkbox_group.change(remote_update, inputs = processors_checkbox_group, outputs = [ FACE_DEBUGGER_ITEMS_LABEL_ROW, FACE_DEBUGGER_ITEMS_CHECKBOX_GROUP ])
 
 
-def remote_update(processors : List[str]) -> Tuple[gradio.CheckboxGroup, gradio.Button]:
+def remote_update(processors : List[str]) -> Tuple[gradio.Row, gradio.CheckboxGroup]:
 	has_face_debugger = 'face_debugger' in processors
-	return gradio.CheckboxGroup(visible = has_face_debugger), gradio.Button(visible = has_face_debugger)
+	return gradio.Row(visible = has_face_debugger), gradio.CheckboxGroup(visible = has_face_debugger)
 
 
 def update_face_debugger_items(face_debugger_items : List[FaceDebuggerItem]) -> None:

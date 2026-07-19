@@ -17,19 +17,30 @@ def render() -> None:
 	global PROCESSORS_CHECKBOX_GROUP
 	global PROCESSORS_HELP_BUTTON
 
-	with gradio.Row():
-		PROCESSORS_CHECKBOX_GROUP = gradio.CheckboxGroup(
-			label = translator.get('uis.processors_checkbox_group'),
-			choices = build_processor_choices(state_manager.get_item('processors')),
-			value = state_manager.get_item('processors')
-		)
-		PROCESSORS_HELP_BUTTON = help_helper.render_help_button('uis_help.processors')
+	label = translator.get('uis.processors_checkbox_group')
+	_, PROCESSORS_HELP_BUTTON = help_helper.render_help_label(label, 'uis_help.processors')
+	PROCESSORS_CHECKBOX_GROUP = gradio.CheckboxGroup(
+		label = label,
+		show_label = False,
+		choices = build_processor_choices(state_manager.get_item('processors')),
+		value = state_manager.get_item('processors')
+	)
 	register_ui_component('processors_checkbox_group', PROCESSORS_CHECKBOX_GROUP)
 
 
 def listen() -> None:
 	PROCESSORS_CHECKBOX_GROUP.change(update_processors, inputs = PROCESSORS_CHECKBOX_GROUP, outputs = PROCESSORS_CHECKBOX_GROUP)
-	help_helper.listen_help_button(PROCESSORS_HELP_BUTTON, 'uis_help.processors')
+	PROCESSORS_HELP_BUTTON.click(show_processors_help)
+
+
+def show_processors_help() -> None:
+	lines = [ translator.get('uis_help.processors') ]
+	separator = '：' if translator.get_language() == 'zh' else ': '
+	for processor in sort_processors([]):
+		tip = translator.get('uis_help.processors_' + processor)
+		if tip:
+			lines.append(processor + separator + tip)
+	gradio.Info('\n'.join(lines))
 
 
 def update_processors(processors : List[str]) -> gradio.CheckboxGroup:

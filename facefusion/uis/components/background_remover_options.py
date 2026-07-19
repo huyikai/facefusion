@@ -13,14 +13,17 @@ from facefusion.uis.core import get_ui_component, register_ui_component
 
 MODULE_NAME = 'facefusion.processors.modules.background_remover'
 
+BACKGROUND_REMOVER_MODEL_LABEL_ROW : Optional[gradio.Row] = None
 BACKGROUND_REMOVER_MODEL_DROPDOWN : Optional[gradio.Dropdown] = None
 BACKGROUND_REMOVER_MODEL_HELP_BUTTON : Optional[gradio.Button] = None
+BACKGROUND_REMOVER_FILL_COLOR_LABEL_ROW : Optional[gradio.Row] = None
 BACKGROUND_REMOVER_FILL_COLOR_WRAPPER : Optional[gradio.Group] = None
 BACKGROUND_REMOVER_FILL_COLOR_HELP_BUTTON : Optional[gradio.Button] = None
 BACKGROUND_REMOVER_FILL_COLOR_RED_NUMBER : Optional[gradio.Number] = None
 BACKGROUND_REMOVER_FILL_COLOR_GREEN_NUMBER : Optional[gradio.Number] = None
 BACKGROUND_REMOVER_FILL_COLOR_BLUE_NUMBER : Optional[gradio.Number] = None
 BACKGROUND_REMOVER_FILL_COLOR_ALPHA_NUMBER : Optional[gradio.Number] = None
+BACKGROUND_REMOVER_DESPILL_COLOR_LABEL_ROW : Optional[gradio.Row] = None
 BACKGROUND_REMOVER_DESPILL_COLOR_WRAPPER : Optional[gradio.Group] = None
 BACKGROUND_REMOVER_DESPILL_COLOR_HELP_BUTTON : Optional[gradio.Button] = None
 BACKGROUND_REMOVER_DESPILL_COLOR_RED_NUMBER : Optional[gradio.Number] = None
@@ -29,15 +32,26 @@ BACKGROUND_REMOVER_DESPILL_COLOR_BLUE_NUMBER : Optional[gradio.Number] = None
 BACKGROUND_REMOVER_DESPILL_COLOR_ALPHA_NUMBER : Optional[gradio.Number] = None
 
 
+def color_group_label(sample_key : str) -> str:
+	label = translator.get(sample_key, MODULE_NAME)
+	for token in [ ' RED', ' GREEN', ' BLUE', ' ALPHA', ' 红', ' 绿', ' 蓝', ' 透明度' ]:
+		if label.endswith(token):
+			return label[ : -len(token) ].strip()
+	return label
+
+
 def render() -> None:
+	global BACKGROUND_REMOVER_MODEL_LABEL_ROW
 	global BACKGROUND_REMOVER_MODEL_DROPDOWN
 	global BACKGROUND_REMOVER_MODEL_HELP_BUTTON
+	global BACKGROUND_REMOVER_FILL_COLOR_LABEL_ROW
 	global BACKGROUND_REMOVER_FILL_COLOR_WRAPPER
 	global BACKGROUND_REMOVER_FILL_COLOR_HELP_BUTTON
 	global BACKGROUND_REMOVER_FILL_COLOR_RED_NUMBER
 	global BACKGROUND_REMOVER_FILL_COLOR_GREEN_NUMBER
 	global BACKGROUND_REMOVER_FILL_COLOR_BLUE_NUMBER
 	global BACKGROUND_REMOVER_FILL_COLOR_ALPHA_NUMBER
+	global BACKGROUND_REMOVER_DESPILL_COLOR_LABEL_ROW
 	global BACKGROUND_REMOVER_DESPILL_COLOR_WRAPPER
 	global BACKGROUND_REMOVER_DESPILL_COLOR_HELP_BUTTON
 	global BACKGROUND_REMOVER_DESPILL_COLOR_RED_NUMBER
@@ -48,14 +62,19 @@ def render() -> None:
 	has_background_remover = 'background_remover' in state_manager.get_item('processors')
 	background_remover_fill_color = state_manager.get_item('background_remover_fill_color')
 	background_remover_despill_color = state_manager.get_item('background_remover_despill_color')
-	with gradio.Row():
-		BACKGROUND_REMOVER_MODEL_DROPDOWN = gradio.Dropdown(
-			label = translator.get('uis.model_dropdown', MODULE_NAME),
-			choices = background_remover_choices.background_remover_models,
-			value = state_manager.get_item('background_remover_model'),
-			visible = has_background_remover
-		)
-		BACKGROUND_REMOVER_MODEL_HELP_BUTTON = help_helper.render_help_button('uis_help.model', MODULE_NAME, visible = has_background_remover)
+	model_label = translator.get('uis.model_dropdown', MODULE_NAME)
+	fill_label = color_group_label('uis.fill_color_red_number')
+	despill_label = color_group_label('uis.despill_color_red_number')
+
+	BACKGROUND_REMOVER_MODEL_LABEL_ROW, BACKGROUND_REMOVER_MODEL_HELP_BUTTON = help_helper.render_help_label(model_label, 'uis_help.model', MODULE_NAME, visible = has_background_remover)
+	BACKGROUND_REMOVER_MODEL_DROPDOWN = gradio.Dropdown(
+		label = model_label,
+		show_label = False,
+		choices = background_remover_choices.background_remover_models,
+		value = state_manager.get_item('background_remover_model'),
+		visible = has_background_remover
+	)
+	BACKGROUND_REMOVER_FILL_COLOR_LABEL_ROW, BACKGROUND_REMOVER_FILL_COLOR_HELP_BUTTON = help_helper.render_help_label(fill_label, 'uis_help.fill_color', MODULE_NAME, visible = has_background_remover)
 	with gradio.Group(visible = has_background_remover) as BACKGROUND_REMOVER_FILL_COLOR_WRAPPER:
 		with gradio.Row():
 			BACKGROUND_REMOVER_FILL_COLOR_RED_NUMBER = gradio.Number(
@@ -72,7 +91,6 @@ def render() -> None:
 				maximum = background_remover_choices.background_remover_color_range[-1],
 				step = calculate_int_step(background_remover_choices.background_remover_color_range)
 			)
-			BACKGROUND_REMOVER_FILL_COLOR_HELP_BUTTON = help_helper.render_help_button('uis_help.fill_color', MODULE_NAME)
 		with gradio.Row():
 			BACKGROUND_REMOVER_FILL_COLOR_BLUE_NUMBER = gradio.Number(
 				label = translator.get('uis.fill_color_blue_number', MODULE_NAME),
@@ -88,6 +106,7 @@ def render() -> None:
 				maximum = background_remover_choices.background_remover_color_range[-1],
 				step = calculate_int_step(background_remover_choices.background_remover_color_range)
 			)
+	BACKGROUND_REMOVER_DESPILL_COLOR_LABEL_ROW, BACKGROUND_REMOVER_DESPILL_COLOR_HELP_BUTTON = help_helper.render_help_label(despill_label, 'uis_help.despill_color', MODULE_NAME, visible = has_background_remover)
 	with gradio.Group(visible = has_background_remover) as BACKGROUND_REMOVER_DESPILL_COLOR_WRAPPER:
 		with gradio.Row():
 			BACKGROUND_REMOVER_DESPILL_COLOR_RED_NUMBER = gradio.Number(
@@ -104,7 +123,6 @@ def render() -> None:
 				maximum = background_remover_choices.background_remover_color_range[-1],
 				step = calculate_int_step(background_remover_choices.background_remover_color_range)
 			)
-			BACKGROUND_REMOVER_DESPILL_COLOR_HELP_BUTTON = help_helper.render_help_button('uis_help.despill_color', MODULE_NAME)
 		with gradio.Row():
 			BACKGROUND_REMOVER_DESPILL_COLOR_BLUE_NUMBER = gradio.Number(
 				label = translator.get('uis.despill_color_blue_number', MODULE_NAME),
@@ -148,12 +166,12 @@ def listen() -> None:
 
 	processors_checkbox_group = get_ui_component('processors_checkbox_group')
 	if processors_checkbox_group:
-		processors_checkbox_group.change(remote_update, inputs = processors_checkbox_group, outputs = [ BACKGROUND_REMOVER_MODEL_DROPDOWN, BACKGROUND_REMOVER_MODEL_HELP_BUTTON, BACKGROUND_REMOVER_FILL_COLOR_WRAPPER, BACKGROUND_REMOVER_DESPILL_COLOR_WRAPPER ])
+		processors_checkbox_group.change(remote_update, inputs = processors_checkbox_group, outputs = [ BACKGROUND_REMOVER_MODEL_LABEL_ROW, BACKGROUND_REMOVER_MODEL_DROPDOWN, BACKGROUND_REMOVER_FILL_COLOR_LABEL_ROW, BACKGROUND_REMOVER_FILL_COLOR_WRAPPER, BACKGROUND_REMOVER_DESPILL_COLOR_LABEL_ROW, BACKGROUND_REMOVER_DESPILL_COLOR_WRAPPER ])
 
 
-def remote_update(processors : List[str]) -> Tuple[gradio.Dropdown, gradio.Button, gradio.Group, gradio.Group]:
+def remote_update(processors : List[str]) -> Tuple[gradio.Row, gradio.Dropdown, gradio.Row, gradio.Group, gradio.Row, gradio.Group]:
 	has_background_remover = 'background_remover' in processors
-	return gradio.Dropdown(visible = has_background_remover), gradio.Button(visible = has_background_remover), gradio.Group(visible = has_background_remover), gradio.Group(visible = has_background_remover)
+	return gradio.Row(visible = has_background_remover), gradio.Dropdown(visible = has_background_remover), gradio.Row(visible = has_background_remover), gradio.Group(visible = has_background_remover), gradio.Row(visible = has_background_remover), gradio.Group(visible = has_background_remover)
 
 
 def update_background_remover_model(background_remover_model : BackgroundRemoverModel) -> gradio.Dropdown:
